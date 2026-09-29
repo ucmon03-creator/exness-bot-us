@@ -1,0 +1,27 @@
+from aiogram import Bot, Dispatcher, types
+from aiogram.filters import CommandStart
+import google.generativeai as genai
+
+# Siz taqdim etgan kalitlar
+BOT_TOKEN = "8935709646:AAFNeoUxbwADfqJo-AVe41tttOKKvzTyolE"
+GEMINI_API_KEY = "AQ.Ab8RN6LiC8RmJwrqBKkaEnVRiodOIS03b6fRi5ubGDR6wq5lYQ"
+
+# Gemini AI sozlamalari
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel("gemini-1.5-flash")
+
+# Bot va Dispatcher
+bot = Bot(token=BOT_TOKEN)
+dp = Dispatcher()
+
+@dp.message(CommandStart())
+async def start_handler(message: types.Message):
+    await message.answer("Assalomu alaykum! Exness AI boti tayyor. Savolingizni yuborishingiz mumkin.")
+
+@dp.message()
+async def ai_message_handler(message: types.Message):
+    try:
+        response = model.generate_content(message.text)
+        await message.answer(response.text)
+    except Exception as e:
+        await message.answer(f"Xatolik yuz berdi: {e}")
